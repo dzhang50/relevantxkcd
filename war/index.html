@@ -12,8 +12,22 @@
     <meta charset="UTF-8">
     <title>Relevant XKCD</title>
     <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//malsup.github.io/jquery.blockUI.js"></script>
+  	<script type="text/javascript">
+  	var uiBlocked = false;
+    function sendQuery() {
+    	query = $("#query").val();
+    	jQuery.get('process?action=xkcd&query='+query, function(data) {
+   			resp(data);
+		});
+		return false;
+    }
     
-    
+    function resp(data) {
+    	alert(data);
+    }
+    </script>
   </head>
 
   <body>
@@ -34,8 +48,8 @@
             
             <h1>There's Always a Relevant XKCD</h1><br/><br/>
             <form name="inputBox" class="form-search">
-          	<input type="text" name="query" placeholder="Search Here" class="input"/><button type="submit" class="btn" >XKCD me!</button>
-          
+          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">XKCD me!</button>
+         
           	
           	</form>  
           	
@@ -54,7 +68,7 @@
           	<input type="image" src="image1" id="imageButton" onClick="autofill();return false;"/>
           	<input type="image" src="image2" id="imageButton" onClick="autofill();return false;"/>
           	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
-          	
+
           	</form>      
           </div>
           <!--  <table>
