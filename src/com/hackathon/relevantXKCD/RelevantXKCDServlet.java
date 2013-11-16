@@ -49,7 +49,8 @@ public class RelevantXKCDServlet extends HttpServlet {
 		} else if(action.equals("xkcd")) {
 			System.out.println("Query: "+query);
 			int idx = findRelevantIdx(query);
-			resp.getWriter().println(idx);
+			Global.buildURLs();
+			resp.getWriter().println(Global.urls.get(idx));
 		}
 	}
 	

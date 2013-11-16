@@ -30,10 +30,37 @@ public class Global {
 
     private static MemcacheService cache = MemcacheServiceFactory.getMemcacheService("cache");
     
+    public static ArrayList<String> urls;
+    
     public static void clearAllCaches() {
     	cache.clearAll();
     }
-
+    
+    public static void buildURLs() throws IOException {
+    	if(urls != null) {
+    		return;
+    	}
+    	urls = new ArrayList<String>();
+    	
+    	FileInputStream fin = null;
+		try {
+			fin = new FileInputStream("urls");
+		} catch (FileNotFoundException e) {
+			// cache.put(name, null);
+			System.out.println("ERROR: FILE NOT FOUND");
+		}
+		BufferedReader fileReader = new BufferedReader(new InputStreamReader(
+				fin));
+		String line;
+		
+		// Fix off-by-one
+		urls.add("");
+		while ((line = fileReader.readLine()) != null) {
+			urls.add(line.trim());
+		}
+		System.out.println("URL array size: "+urls.size());
+    }
+    
     public static void buildEDict() throws IOException {
     	if(eGlobalDict == null) {
     		eGlobalDict = buildDict("explainDict");
