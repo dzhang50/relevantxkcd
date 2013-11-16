@@ -30,6 +30,9 @@ public class Global {
 
     private static MemcacheService cache = MemcacheServiceFactory.getMemcacheService("cache");
     
+    public static Classifier<String, String> bayes = new BayesClassifier<String, String>();
+
+    
     public static ArrayList<String> urls;
     
     public static void clearAllCaches() {
@@ -40,6 +43,10 @@ public class Global {
     	if(urls != null) {
     		return;
     	}
+    	
+    	// Should only happen once
+        bayes.setMemoryCapacity(1000);
+        
     	urls = new ArrayList<String>();
     	
     	FileInputStream fin = null;

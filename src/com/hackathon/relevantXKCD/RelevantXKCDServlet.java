@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class RelevantXKCDServlet extends HttpServlet {
 	
     public final static long MAX_RUNTIME_MILLIS = 10000;
-    public final static double TRANS_BIAS = 20.0;
+    public final static double TRANS_BIAS = 25.0;
     
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -31,6 +32,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		
 		String action = req.getParameter("action");
 		String query = req.getParameter("query");
+		String dir = req.getParameter("dir");
 		System.out.println("Action: "+action+", query: "+query);
 		
 		if(action.equals("rebuild")) {
@@ -52,6 +54,21 @@ public class RelevantXKCDServlet extends HttpServlet {
 			Global.buildURLs();
 			resp.getWriter().println(Global.urls.get(idx));
 		}
+		else if(action.equals("train")) {
+			String q = query.replaceAll("[^0-9A-Za-z ]", "");
+			String[] split = q.split("\\s+");
+			for(int i = 0; i < split.length; i++) {
+				split[i] = split[i].toLowerCase();
+				split[i] = split[i].trim();
+			}
+			if(dir.equals("positive")) {
+				Global.bayes.learn("positive", Arrays.asList(split));
+			}
+			else {
+				Global.bayes.learn("negative", Arrays.asList(split));
+			}
+			
+		}
 	}
 	
 	
@@ -63,6 +80,36 @@ public class RelevantXKCDServlet extends HttpServlet {
 			split[i] = split[i].trim();
 		}
 		System.out.println(Arrays.toString(split));
+
+		//Global.bayes.learn("positive", Arrays.asList(split));
+
+		Classification<String, String> classify = Global.bayes.classify(Arrays.asList(split));
+		double eBias = 1.0/10.0, tBias = 10.0;
+		if(classify == null) {
+			System.out.println("Naive Bayes is not initialized");
+			eBias = 1.0/10.0;
+			tBias = 10.0;
+		}
+		// Positive tends towards transcript
+		else if(classify.getCategory().equals("positive")) {
+			double prob = classify.getProbability();
+			System.out.println("Naive Bayes is positive with prob "+prob);
+			if(prob > 0.7) {
+				double weight = prob*30.0;
+				eBias = 1.0/weight;
+				tBias = weight;
+			}
+		}
+		// Negative tends towards explanation
+		else {
+			double prob = classify.getProbability();
+			System.out.println("Naive Bayes is negative with prob "+prob);
+			if(prob > 0.7) {
+				double weight = prob*30.0;
+				eBias = weight;
+				tBias = 1.0/weight;
+			}
+		}
 		
 		// For each xkcd comic (hard-coded to 1290, FIXME)
 		ArrayList<Tuple<Integer, Double>> explainWeights = new ArrayList<Tuple<Integer, Double>>();
@@ -136,7 +183,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		endMisses = Global.cacheMisses;
 		ArrayList<Tuple<Integer, Double>> totalWeights = new ArrayList<Tuple<Integer, Double>>();
 		for(int i = 0; i < explainWeights.size(); i++) {
-			double w = (1.0/TRANS_BIAS)*explainWeights.get(i).second + TRANS_BIAS*transcriptWeights.get(i).second;
+			double w = eBias*explainWeights.get(i).second + tBias*transcriptWeights.get(i).second;
 			totalWeights.add(new Tuple<Integer, Double>(explainWeights.get(i).first, new Double(w)));
 			//System.out.println(i+": eWeight: "+explainWeights.get(i)+", tWeight: "+transcriptWeights.get(i)+", total: "+w);
 		}
