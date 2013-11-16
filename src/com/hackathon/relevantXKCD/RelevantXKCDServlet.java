@@ -84,7 +84,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		//Global.bayes.learn("positive", Arrays.asList(split));
 
 		Classification<String, String> classify = Global.bayes.classify(Arrays.asList(split));
-		double eBias = 1.0/10.0, tBias = 10.0;
+		double eBias = 1.0/20.0, tBias = 20.0;
 		if(classify == null) {
 			System.out.println("Naive Bayes is not initialized");
 			eBias = 1.0/10.0;
@@ -95,7 +95,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 			double prob = classify.getProbability();
 			System.out.println("Naive Bayes is positive with prob "+prob);
 			if(prob > 0.7) {
-				double weight = prob*30.0;
+				double weight = prob*40.0;
 				eBias = 1.0/weight;
 				tBias = weight;
 			}
@@ -105,7 +105,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 			double prob = classify.getProbability();
 			System.out.println("Naive Bayes is negative with prob "+prob);
 			if(prob > 0.7) {
-				double weight = prob*30.0;
+				double weight = prob*40.0;
 				eBias = weight;
 				tBias = 1.0/weight;
 			}
