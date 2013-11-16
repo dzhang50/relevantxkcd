@@ -20,19 +20,22 @@
   	<div class="container">
 		<div class="navbar">
               <div class="navbar-inner">
-                <div class="container">
+                <!--  <div class="container">-->
                   <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
                     <li><a href="#">About</a></li>
-                    <li><a href="#">HackTX</a></li>
+                    <li><a href="https://www.hackerleague.org/hackathons/hacktx">HackTX</a></li>
                   </ul>
-                </div>
+                <!--  </div>-->
               </div>
             </div>
+            
+            <div align = "center">
+            
             <h1>There's Always a Relevant XKCD</h1><br/><br/>
-          <div align = "center">
-          	<form name="inputBox">
-          	<input type="text" name="query" /><input type="submit">
+            <form name="inputBox" class="form-search">
+          	<input type="text" name="query" value="SEARCH HERE"/><button type="submit" class="btn" >XKCD me!</button>
+          
           	
           	</form>  
           	
@@ -45,8 +48,9 @@
           	
           	<form>
           	Was this accurate?
-          	<input type="button" value="Yes"/>
-          	<br/><br/>
+          	<button class="btn btn-info" type="button">Yes</button>
+          	<br/>
+          	Or, choose the best option<br/>
           	<input type="image" src="image1" id="imageButton" onClick="autofill();return false;"/>
           	<input type="image" src="image2" id="imageButton" onClick="autofill();return false;"/>
           	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
