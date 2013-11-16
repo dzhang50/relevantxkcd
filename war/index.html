@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <!-- NOT USING vvvvvvv -- instead HTML5 -->
 <!-- The HTML 4.01 Transitional DOCTYPE declaration-->
 <!-- above set at the top of the file will set     -->
@@ -9,42 +9,51 @@
 
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <title>Relevant XKCD</title>
-    <link rel=”stylesheet” href=”css/bootstrap.css”  type=”text/css”/>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src=”js/bootstrap.js”></script>
+    <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
+    
     
   </head>
 
   <body>
-  	<div class="”container”">
-    
+  	<div class="container">
 		<div class="navbar">
               <div class="navbar-inner">
                 <div class="container">
                   <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Home</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">HackTX</a></li>
                   </ul>
                 </div>
               </div>
             </div>
-            <h1>There's always Relevant XKCD!</h1>
-          
-          <h3>How we started ?</h3>
- 
-		<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
- 
-		<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
- 
-		<h3>How do we market?</h3>
- 
-		<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-   
-    <!--  <table>
+            <h1>There's Always a Relevant XKCD</h1><br/><br/>
+          <div align = "center">
+          	<form name="inputBox">
+          	<input type="text" name="query" /><input type="submit">
+          	
+          	</form>  
+          	
+          	<br/><br/>
+          	<!-- Put in a js function-->
+          	<img src="comic" alt="comic alt text"/> 
+          	<br/><br/> 
+          	
+          	
+          	
+          	<form>
+          	Was this accurate?
+          	<input type="button" value="Yes"/>
+          	<br/><br/>
+          	<input type="image" src="image1" id="imageButton" onClick="autofill();return false;"/>
+          	<input type="image" src="image2" id="imageButton" onClick="autofill();return false;"/>
+          	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
+          	
+          	</form>      
+          </div>
+          <!--  <table>
       <tr>
         <td colspan="2" style="font-weight:bold;">Available Servlets:</td>        
       </tr>
@@ -53,6 +62,9 @@
       </tr>
     </table>
     -->
+    
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
     </div>
   </body>
 </html>
