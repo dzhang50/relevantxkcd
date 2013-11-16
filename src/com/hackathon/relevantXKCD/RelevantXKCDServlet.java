@@ -22,7 +22,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 @SuppressWarnings("serial")
 public class RelevantXKCDServlet extends HttpServlet {
 	
-    public final static long MAX_RUNTIME_MILLIS = 10000;
+    public final static long MAX_RUNTIME_MILLIS = 30000;
     public final static double TRANS_BIAS = 25.0;
     
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -50,9 +50,13 @@ public class RelevantXKCDServlet extends HttpServlet {
 			}
 		} else if(action.equals("xkcd")) {
 			System.out.println("Query: "+query);
-			int idx = findRelevantIdx(query);
+			ArrayList<Integer> idxs = findRelevantIdx(query);
 			Global.buildURLs();
-			resp.getWriter().println(Global.urls.get(idx));
+			
+			for(Integer idx : idxs) {
+				String url = Global.urls.get(idx);
+				resp.getWriter().println(url+" ");
+			}
 		}
 		else if(action.equals("train")) {
 			String q = query.replaceAll("[^0-9A-Za-z ]", "");
@@ -72,7 +76,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 	}
 	
 	
-	public int findRelevantIdx(String query) throws IOException{
+	public ArrayList<Integer> findRelevantIdx(String query) throws IOException{
 		String q = query.replaceAll("[^0-9A-Za-z ]", "");
 		String[] split = q.split("\\s+");
 		for(int i = 0; i < split.length; i++) {
@@ -225,7 +229,13 @@ public class RelevantXKCDServlet extends HttpServlet {
 		System.out.println("Total time: "+(endTime-startTime));
 		System.out.println("Total cache misses: "+(endMisses-startMisses));
 		
-		return totalWeights.get(0).first;
+		ArrayList<Integer> comics = new ArrayList<Integer>();
+		comics.add(totalWeights.get(0).first);
+		comics.add(explainWeights.get(0).first);
+		comics.add(transcriptWeights.get(0).first);
+		comics.add(totalWeights.get(1).first);
+		comics.add(totalWeights.get(2).first);
+		return comics;
 	}
 	
 	public Tuple<Integer, Integer> getGlobalIdx(String word) throws IOException{
