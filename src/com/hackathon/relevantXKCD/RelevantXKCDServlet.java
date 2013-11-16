@@ -21,7 +21,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 @SuppressWarnings("serial")
 public class RelevantXKCDServlet extends HttpServlet {
 	
-    public final static long MAX_RUNTIME_MILLIS = 60000;
+    public final static long MAX_RUNTIME_MILLIS = 10000;
     public final static double TRANS_BIAS = 20.0;
     
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -74,16 +74,18 @@ public class RelevantXKCDServlet extends HttpServlet {
 		boolean earlyStop = false;
 		//for(int i = 1; i < 1290; i++) {
 		for(int i = 1289; i > 0; i--) {
-			HashMap<Integer, Integer> explain = Global.getDict("explain_"+Integer.toString(i));
+			HashMap<Integer, Integer> explain = Global.getBlockDict("explain", i);
 			if(explain == null) {
+				System.out.println("Warning, NULL: explain_"+i);
 				continue;
 			}
-			HashMap<Integer, Integer> transcript = Global.getDict("transcript_"+Integer.toString(i));
+			HashMap<Integer, Integer> transcript = Global.getBlockDict("transcript", i);
 			if(transcript == null) {
+				System.out.println("Warning, NULL: transcript_"+i);
 				continue;
 			}
-			HashMap<Integer, Integer> globalExplain = Global.getDict("explainDict");
-			HashMap<Integer, Integer> globalTranscript = Global.getDict("transcriptDict");
+			Global.buildEDict();
+			Global.buildTDict();
 			
 			Double eWeight = 0.0;
 			Double tWeight = 0.0;
@@ -98,17 +100,21 @@ public class RelevantXKCDServlet extends HttpServlet {
 					// Deal with explain
 					// If contained in word, increment eWeight
 					if(explain.containsKey(entry.first)) {
-						assert(globalExplain.containsKey(entry.first));
-						eWeight += ((double)explain.get(entry.first))/((double)globalExplain.get(entry.first));
-						//System.out.println("Word "+split[j]+" matched! eWeight += "+explain.get(entry.first)+"/"+globalExplain.get(entry.first)+" = "+eWeight);
+						assert(Global.eGlobalDict.containsKey(entry.first));
+						eWeight += ((double)explain.get(entry.first))/((double)Global.eGlobalDict.get(entry.first));
+						//System.out.println("Explain word '"+split[j]+"' matched! eWeight += "+explain.get(entry.first)+"/"+Global.eGlobalDict.get(entry.first)+" = "+eWeight);
 					}
 
 					// Deal with transcript
 					// If contained in word, increment tWeight
 					if(transcript.containsKey(entry.first)) {
-						assert(globalTranscript.containsKey(entry.first));
-						tWeight += ((double)transcript.get(entry.first))/((double)globalTranscript.get(entry.first));
-						//System.out.println("Word "+split[j]+" matched! tWeight += "+transcript.get(entry.first)+"/"+globalTranscript.get(entry.first)+" = "+tWeight);
+						assert(Global.tGlobalDict.containsKey(entry.first));
+						Double transcriptGet = ((double)transcript.get(entry.first));
+						//System.out.println("transcript file: "+i+", word "+split[j]+", key "+entry.first);
+						Double globalTranscriptGet = ((double)Global.tGlobalDict.get(entry.first));
+						
+						tWeight += transcriptGet/globalTranscriptGet;
+						//System.out.println("Transcript word '"+split[j]+"' matched! tWeight += "+transcript.get(entry.first)+"/"+Global.tGlobalDict.get(entry.first)+" = "+tWeight);
 					}
 				}
 			}
@@ -131,7 +137,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		for(int i = 0; i < explainWeights.size(); i++) {
 			double w = (1.0/TRANS_BIAS)*explainWeights.get(i).second + TRANS_BIAS*transcriptWeights.get(i).second;
 			totalWeights.add(new Tuple<Integer, Double>(explainWeights.get(i).first, new Double(w)));
-			System.out.println(i+": eWeight: "+explainWeights.get(i)+", tWeight: "+transcriptWeights.get(i)+", total: "+w);
+			//System.out.println(i+": eWeight: "+explainWeights.get(i)+", tWeight: "+transcriptWeights.get(i)+", total: "+w);
 		}
 
 		Collections.sort(explainWeights, new Comparator<Tuple<Integer, Double>>(){
@@ -164,7 +170,9 @@ public class RelevantXKCDServlet extends HttpServlet {
 		        return 0;
 		    }
 		});
-		
+
+		//System.out.println(explainWeights);
+		//System.out.println(transcriptWeights);
 		System.out.println(totalWeights);
 		System.out.println("Total time: "+(endTime-startTime));
 		System.out.println("Total cache misses: "+(endMisses-startMisses));
