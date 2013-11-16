@@ -15,25 +15,41 @@
     <link rel="stylesheet" href="css/custom.css"  type="text/css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//malsup.github.io/jquery.blockUI.js"></script>
-  	<script src="js/facebook.js"></script>
+  	<script src="js/heartcode-canvasloader-min.js"></script>
   	<script type="text/javascript">
   	var uiBlocked = false;
-  	var aboutcode = "About us blahblahblah";
-  	
- 
+    
     function sendQuery() {
     	query = $("#query").val();
     	document.getElementById("comic").innerHTML = "loading...<br/><br/>";
     	
+cl.show(); // Hidden by default
+    	//document.getElementById("subcomic").disabled = true;
     	jQuery.get('process?action=xkcd&query='+query, function(data) {
    			resp(data);
 		});
-		
+		//document.getElementById("subcomic").disabled = false;
+		//spinner.spin(false);
+		cl.hide();
 		return false;
     }
     
     function resp(data) {
-    	document.getElementById("comic").innerHTML="<img src='http://www.explainxkcd.com/"+data+"'/>";
+    	var lines;
+    	var count = 0;
+    	
+    	lines = "<img src='http://www.explainxkcd.com/"+data+"'/><br/><br/>";
+    	
+    	
+    	/*lines = "<img src='http://www.explainxkcd.com/"+data[0]+"' alt='"+data[1]+"/><br/><br/>";
+    	for (var i=2,len=data.length; i<(len - 1); i+=2)
+		{ 
+			lines += "<img src='http://www.explainxkcd.com/"+data[i]+"' width = '200' alt='"+data[i+1]+"/>";
+    	
+		}*/
+    	
+    	
+    	document.getElementById("comic").innerHTML=lines;
     }
     
 	function aboutClick() {
@@ -90,31 +106,38 @@
 <div id="middleContainer" class="box">
 
 <div id="ctitle">There's Always a Relevant xkcd</div>
-<br/>
+<br/><br/>
             <form name="inputBox" class="form-search">
-          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
-          	</form>  <br/><br/>
+          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" id="subcomic" name="subcomic" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
+          	</form>  <br/><br/><br/>
+          	
+<div id="loader"></div>
 <div id="comic">
-<img src="http://imgs.xkcd.com/comics/barrel_cropped_(1).jpg"/>
+<img src="http://www.explainxkcd.com//wiki/images/4/4f/online_communities_small.png"/>
 </div>
 <!-- <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 -->
 
-<br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/>
 </div>
 
 <div id="bottom" class="box">
 <a name="about"></a>
 <div id="ctitle">About</div>
-This was created by <a href="http://www.danzhang.net">Dan Zhang</a> and 
-<a href="http://www.maruthven.com">Megan Ruthven</a> to easily find 
-the xkcd comic we were looking for. 
+It is known that there's always a relevant XKCD comic regardless of the
+ situation. We prove this with our website! Users simply enter a sentence or 
+ two and the page shows the relevant XKCD comic.
+<a href="http://www.danzhang.net">Dan Zhang</a> and 
+<a href="http://www.maruthven.com">Megan Ruthven</a> created this website 
+to exemplify this phenomenon. Relevant XKCD pulls information from the title and
+content each image to compare against your request. 
 <br/>
 Try it out by typing in a description of a comic you are looking for and wait 
-for it to appear before your very eyes!
-<br/>These images are linked from the original
-<a href="http://www.xkcd.com">xkcd website</a>. We do not claim these 
-images as our own. 
+for it to appear before your very eyes! We suggest writing longer sentences 
+gives our algorithm more data to work with.
+<br/>These images are from the original
+<a href="http://www.xkcd.com">xkcd online comic</a>. We do not claim these 
+images as our own work, but we do claim they are awesome! 
 </div>
 </div>
 </body>
