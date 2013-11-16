@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- NOT USING vvvvvvv -- instead HTML5 -->
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Relevant XKCD</title>
+    <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//malsup.github.io/jquery.blockUI.js"></script>
+  	<script type="text/javascript">
+  	var uiBlocked = false;
+  	var aboutcode = "About us blahblahblah";
+    function sendQuery() {
+    	query = $("#query").val();
+    	jQuery.get('process?action=xkcd&query='+query, function(data) {
+   			resp(data);
+		});
+		return false;
+    }
+    
+    function resp(data) {
+    
+    	document.getElementById("results").innerHTML="<img src='img/cloud.png'/>";
+    	
+    }
+    
+	function aboutClick() {
+		//show the loading bar
+		showLoading();
+		//load selected section
+		switch(this.id){
+			case "about":
+				content.load(aboutcode, hideLoading);
+			default:
+				//hide loading bar if there is no selected section
+				hideLoading();
+				break;
+		}
+	}
+
+	//show loading bar
+	function showLoading(){
+		loading
+			.css({visibility:"visible"})
+			.css({opacity:"1"})
+			.css({display:"block"})
+		;
+	}
+	//hide loading bar
+	function hideLoading(){
+		loading.fadeTo(1000, 0);
+	}
+
+    </script>
+  </head>
+<!--<br/><br/> 
+          	
+          	<form>
+          	Was this accurate?
+          	<button class='btn' type='button'>Yes</button>
+          	<br/>
+          	Or, choose the best option<br/>
+          	<input type='image' src='image1' id='imageButton' onClick='autofill();return false;'/>
+          	<input type='image' src='image2' id='imageButton' onClick='autofill();return false;'/>
+          	<input type='image' src='image3' id='imageButton' onClick='autofill();return false;'/>
+
+          	</form>"; -->
+  <body>
+  	<div class="container">
+		<div class="navbar">
+              <div class="navbar-inner">
+                <!--  <div class="container">-->
+                  <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li class="active"><a href = "about.html">About</a></li>
+                    <li><a href="https://www.hackerleague.org/hackathons/hacktx">HackTX</a></li>
+                  </ul>
+                <!--  </div>-->
+              </div>
+            </div>
+            <div background-color="white">
+            <h1>About us!</h1> 
+            <a href="danzhang.net">Dan Zhang</a> and <a href="maruthven.com">Megan Ruthven</a>
+            based this off of the meme/theory that there is always a xkcd meme to represent everything.
+          </div>
+    
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    </div>
+  </body>
+  
+
+</html>

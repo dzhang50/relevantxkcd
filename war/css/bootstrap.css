@@ -229,6 +229,9 @@ body {
   line-height: 24px;
   color: #333333;
   background-color:#96A8C8;
+  background-image: url('/img/cloud.png');
+  background-repeat: no-repeat;
+  background-position: left top;
 }
 
 a {
@@ -1057,9 +1060,9 @@ input,
 button,
 select,
 textarea {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: normal;
-  line-height: 20px;
+  line-height: 24px;
 }
 
 input,
@@ -1067,6 +1070,7 @@ button,
 select,
 textarea {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-variant: small-caps;
 }
 
 label {
@@ -1092,11 +1096,11 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   display: inline-block;
-  height: 20px;
+  height: 24px;
   padding: 4px 6px;
   margin-bottom: 10px;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 18px;
+  line-height: 24px;
   color: #555555;
   vertical-align: middle;
   -webkit-border-radius: 4px;

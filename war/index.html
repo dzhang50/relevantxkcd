@@ -14,8 +14,10 @@
     <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//malsup.github.io/jquery.blockUI.js"></script>
+  	<script src="js/facebook.js"></script>
   	<script type="text/javascript">
   	var uiBlocked = false;
+  	var aboutcode = "About us blahblahblah";
     function sendQuery() {
     	query = $("#query").val();
     	jQuery.get('process?action=xkcd&query='+query, function(data) {
@@ -25,40 +27,84 @@
     }
     
     function resp(data) {
-    	alert(data);
+    
+    	document.getElementById("results").innerHTML="<img src='img/cloud.png'/>";
+    	
     }
+    
+	function aboutClick() {
+		//show the loading bar
+		showLoading();
+		//load selected section
+		switch(this.id){
+			case "about":
+				content.load(aboutcode, hideLoading);
+			default:
+				//hide loading bar if there is no selected section
+				hideLoading();
+				break;
+		}
+	}
+
+	//show loading bar
+	function showLoading(){
+		loading
+			.css({visibility:"visible"})
+			.css({opacity:"1"})
+			.css({display:"block"})
+		;
+	}
+	//hide loading bar
+	function hideLoading(){
+		loading.fadeTo(1000, 0);
+	}
+
     </script>
   </head>
+<!--<br/><br/> 
+          	
+          	<form>
+          	Was this accurate?
+          	<button class='btn' type='button'>Yes</button>
+          	<br/>
+          	Or, choose the best option<br/>
+          	<input type='image' src='image1' id='imageButton' onClick='autofill();return false;'/>
+          	<input type='image' src='image2' id='imageButton' onClick='autofill();return false;'/>
+          	<input type='image' src='image3' id='imageButton' onClick='autofill();return false;'/>
 
+          	</form>"; -->
   <body>
   	<div class="container">
 		<div class="navbar">
               <div class="navbar-inner">
-                <!--  <div class="container">-->
+                  <div class="container">
                   <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">About</a></li>
+                    <li><a href = "about.html">About</a></li>
                     <li><a href="https://www.hackerleague.org/hackathons/hacktx">HackTX</a></li>
                   </ul>
-                <!--  </div>-->
+                  </div>
               </div>
             </div>
             
+            
             <div align = "center">
             
-            <h1>There's Always a Relevant XKCD</h1><br/><br/>
+            <h1><b>There's Always a Relevant xkcd</b></h1><br/><br/>
             <form name="inputBox" class="form-search">
-          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">XKCD me!</button>
-         
-          	
+          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
           	</form>  
           	
+          	
+          	<br /> Or, see your XKCD comic by logging into Facebook
+          	<br/><fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
           	<br/><br/>
+          	
+          	<p id="results">
+          	</p>
           	<!-- Put in a js function-->
-          	<img src="comic" alt="comic alt text"/> 
+          	<!-- <img src="comic" alt="comic alt text"/> 
           	<br/><br/> 
-          	
-          	
           	
           	<form>
           	Was this accurate?
@@ -69,20 +115,13 @@
           	<input type="image" src="image2" id="imageButton" onClick="autofill();return false;"/>
           	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
 
-          	</form>      
+          	</form>   -->   
           </div>
-          <!--  <table>
-      <tr>
-        <td colspan="2" style="font-weight:bold;">Available Servlets:</td>        
-      </tr>
-      <tr>
-        <td><a href="relevantxkcd">RelevantXKCD</a></td>
-      </tr>
-    </table>
-    -->
     
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
     </div>
   </body>
+  
+
 </html>
