@@ -154,6 +154,7 @@ ul.comicNav a:hover {
 }
 #bottom {
 	margin-top:5px;
+	margin-bottom: 25px;
 	padding:10px 15px;
 	width:750px;
 }
@@ -183,6 +184,38 @@ ul.comicNav a:hover {
 #comic .comic { position:absolute; }
 #comic .panel, #comic .cover, #comic .panel img { position:absolute; }
 #comic .cover { z-index:10; }
+
+
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+input,
+button,
+select,
+submit,
+textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-variant: small-caps;
+	font-size: 16px;
+}
+
+
+button.btn,
+input[type="submit"].btn {
+  *padding-top: 3px;
+  *padding-bottom: 3px;
+}
+
+input[type="text"]{
+	
+	width: 500px;
+}
 
 @font-face {
   font-family: 'xkcd-Regular';

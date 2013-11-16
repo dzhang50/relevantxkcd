@@ -19,18 +19,22 @@
   	<script type="text/javascript">
   	var uiBlocked = false;
   	var aboutcode = "About us blahblahblah";
+  	
+ 
     function sendQuery() {
     	query = $("#query").val();
+    	document.getElementById("comic").innerHTML = "loading...<br/><br/>";
+    	
     	jQuery.get('process?action=xkcd&query='+query, function(data) {
    			resp(data);
 		});
+		
 		return false;
     }
     
     function resp(data) {
-    	alert(data);
-    	document.getElementById("comic").innerHTML="<img src='img/cloud.png'/>";
-    	
+    
+    	document.getElementById("comic").innerHTML="<img src='http://www.explainxkcd.com/"+data+"'/>";
     }
     
 	function aboutClick() {
@@ -90,18 +94,26 @@
 <br/>
             <form name="inputBox" class="form-search">
           	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
-          	</form>  
+          	</form>  <br/><br/>
 <div id="comic">
-
+<img src="http://imgs.xkcd.com/comics/barrel_cropped_(1).jpg"/>
 </div>
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<!-- <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+-->
+
+<br/><br/><br/><br/><br/><br/><br/>
 </div>
 
 <div id="bottom" class="box">
 <a name="about"></a>
 <div id="ctitle">About</div>
-This was created by Dan Zhang and Megan Ruthven to easily find 
-the xkcd comic we were looking for. These images are linked from the original
+This was created by <a href="http://www.danzhang.net">Dan Zhang</a> and 
+<a href="http://www.maruthven.com">Megan Ruthven</a> to easily find 
+the xkcd comic we were looking for. 
+<br/>
+Try it out by typing in a description of a comic you are looking for and wait 
+for it to appear before your very eyes!
+<br/>These images are linked from the original
 <a href="http://www.xkcd.com">xkcd website</a>. We do not claim these 
 images as our own. 
 </div>
