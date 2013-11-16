@@ -11,7 +11,8 @@
   <head>
     <meta charset="UTF-8">
     <title>Relevant XKCD</title>
-    <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
+    <!-- <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>-->
+    <link rel="stylesheet" href="css/custom.css"  type="text/css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//malsup.github.io/jquery.blockUI.js"></script>
   	<script src="js/facebook.js"></script>
@@ -28,7 +29,7 @@
     
     function resp(data) {
     
-    	document.getElementById("results").innerHTML="<img src='img/cloud.png'/>";
+    	document.getElementById("comic").innerHTML="<img src='img/cloud.png'/>";
     	
     }
     
@@ -61,6 +62,53 @@
 
     </script>
   </head>
+  
+  
+  <!-- XKCD structure -->
+  
+  <body>
+<div id="topContainer">
+<div id="topLeft">
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="#about">About</a></li>
+<li><a href="https://www.hackerleague.org/hackathons/hacktx">HackTX</a></li>
+</ul>
+</div>
+<div id="topRight">
+<div id="masthead">
+<span><a href="/"><img src="img/xkcdlogo.png" alt="xkcd.com logo" height="83" width="185"/></a></span>
+<span id="slogan">Find the xkcd comic <br/>you are looking for.</span>
+</div>
+</div>
+<div id="bgLeft" class="bg box"></div>
+<div id="bgRight" class="bg box"></div>
+</div>
+<div id="middleContainer" class="box">
+
+<div id="ctitle">There's Always a Relevant xkcd</div>
+<br/>
+            <form name="inputBox" class="form-search">
+          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
+          	</form>  
+<div id="comic">
+
+</div>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+</div>
+
+<div id="bottom" class="box">
+<a name="about"></a>
+<div id="ctitle">About</div>
+This was created by Dan Zhang and Megan Ruthven to easily find 
+the xkcd comic we were looking for. These images are linked from the original
+<a href="http://www.xkcd.com">xkcd website</a>. We do not claim these 
+images as our own. 
+</div>
+</div>
+</body>
+<!-- Layout by Ian Clasbey, davean, and chromakode -->
+  
 <!--<br/><br/> 
           	
           	<form>
@@ -73,7 +121,7 @@
           	<input type='image' src='image3' id='imageButton' onClick='autofill();return false;'/>
 
           	</form>"; -->
-  <body>
+  <!-- <body>
   	<div class="container">
 		<div class="navbar">
               <div class="navbar-inner">
@@ -88,7 +136,7 @@
             </div>
             
             
-            <div align = "center">
+            <div class="main">
             
             <h1><b>There's Always a Relevant xkcd</b></h1><br/><br/>
             <form name="inputBox" class="form-search">
@@ -101,7 +149,7 @@
           	<br/><br/>
           	
           	<p id="results">
-          	</p>
+          	</p>-->
           	<!-- Put in a js function-->
           	<!-- <img src="comic" alt="comic alt text"/> 
           	<br/><br/> 
@@ -116,12 +164,12 @@
           	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
 
           	</form>   -->   
-          </div>
+          <!--</div>
     
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
     </div>
-  </body>
+  </body>-->
   
 
 </html>

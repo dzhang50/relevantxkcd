@@ -227,21 +227,19 @@ body {
   font-variant: small-caps;
   font-size: 18px;
   line-height: 24px;
+  font-weight: 500;
   color: #333333;
   background-color:#96A8C8;
-  background-image: url('/img/cloud.png');
-  background-repeat: no-repeat;
-  background-position: left top;
 }
 
 a {
-  color: #0088cc;
+  color: #282B30;
+  font-weight: 800px;
   text-decoration: none;
 }
 
 a:hover,
 a:focus {
-  color: #005580;
   text-decoration: underline;
 }
 
