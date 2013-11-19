@@ -18,15 +18,67 @@
   	<script src="js/heartcode-canvasloader-min.js"></script>
   	<script type="text/javascript">
   	var uiBlocked = false;
+  	var lastQuery = "";
+  	var altComic = "";
+  	var selection = 0;
+  	var curSelection = 0;
+  	var comics = [];
+  	var lastAltComicIdx = -1;
+    
+    function trainTrue() {
+    	jQuery.get('process?action=train&idx='+curSelection+'&query='+lastQuery, function(data) {
+    		// do nothing
+    		$("#training").fadeOut("slow", function() {
+    			document.getElementById("training").innerHTML = "Thanks for the feedback!<br><br>";
+    			$("#training").fadeIn("slow");
+    			setTimeout(function(){$("#training").fadeOut("slow"); }, 2000);
+    		});
+		});
+    }
+    
+    function showFalse() {
+    	if(lastAltComicIdx+1 == comics.length) {
+    		$("#training").fadeOut("slow", function() {
+    			var q = "No more options! Sorry we give up (for now)...<br><br>";
+    			document.getElementById("training").innerHTML = q;
+    		
+    			$("#training").fadeIn("slow");
+    		});
+    		return;
+    	}
+    	
+    	
+    	$("#training").fadeOut("slow", function() {
+    		var q = "How about this? <button onclick=\"trainTrue(); return false;\">Yes</button> <button onclick=\"showFalse(); return false;\">No</button><br><br>";
+    		document.getElementById("training").innerHTML = q;
+    		
+    		$("#training").fadeIn("slow");
+    	});
+    	
+    	$("#comic").fadeOut("slow", function() {
+    		var lines = "";
+    		for(var i = lastAltComicIdx+1; i < comics.length; i++) {
+    			if(i != selection) {
+    				lines = "<img src='http://www.explainxkcd.com/"+comics[i]+"'  /></br><br/>";
+    				document.getElementById("comic").innerHTML=lines;
+    				lastAltComicIdx = i;
+    				curSelection = i;
+    				$("#comic").fadeIn("slow");
+    				return;
+    			}
+    		}
+    	});
+    }
     
     function sendQuery() {
     	query = $("#query").val();
+    	lastQuery = query;
     	document.getElementById("comic").innerHTML = "loading...<br/><br/>";
     
     	document.getElementById("subcomic").disabled = true;
     	jQuery.get('process?action=xkcd&query='+query, function(data) {
+    		data = data.trim();
    			resp(data.split(" "));
-   			//document.getElementById("comic").innerHTML=data;
 		});
 		document.getElementById("subcomic").disabled = false;
 
@@ -35,20 +87,18 @@
     
     function resp(data) {
     	var lines = "";
-    	var count = 0;
+    	selection = parseInt(data[0]);
+    	curSelection = selection;
+    	lastAltComicIdx = -1;
     	
-    	//lines = "<img src='http://www.explainxkcd.com/"+data+"'/><br/><br/>";
-    	
-    	
-    	//lines += "<img src='http://www.explainxkcd.com/"+data[0]+"'  /><br/><br/>";
-    
-    	for (var i=0,len=5; i<(len); i++)
-		{ 
-		
-			lines += "<img src='http://www.explainxkcd.com/"+data[i]+"'  /></br><br/><br/><br/><br/>";
-    	
+    	document.getElementById("training").innerHTML = "Was this accurate? <button onclick=\"trainTrue(); return false;\">Yes</button> <button onclick=\"showFalse(); return false;\">No</button><br><br>";
+		$("#training").fadeIn("slow");
+    	for (var i = 1; i < data.length; i++) {
+    		comics[i-1] = data[i];
 		}
-    	
+		
+		lines = "<img src='http://www.explainxkcd.com/"+comics[selection]+"'  /></br><br/>";
+		
     	document.getElementById("comic").innerHTML=lines;
     }
     
@@ -109,21 +159,20 @@
 <br/><br/>
             <form name="inputBox" class="form-search">
           	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" id="subcomic" name="subcomic" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
-          	</form>  <br/><br/><br/>
+          	</form>  <br/>
           	
 <div id="loader"></div>
+<div id="training"></div>
 <div id="comic">
-<img src="http://www.explainxkcd.com//wiki/images/4/4f/online_communities_small.png"/>
+<br><br>
+<!--   img src="http://www.explainxkcd.com//wiki/images/4/4f/online_communities_small.png"/ -->
 </div>
-<!-- <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
--->
-
-<br/><br/><br/><br/>
 </div>
 
 <div id="bottom" class="box">
 <a name="about"></a>
 <div id="ctitle">About</div>
+<p>
 It is known that there's always a relevant XKCD comic regardless of the
  situation. We prove this with our website! Users simply enter a sentence or 
  two and the page shows the relevant XKCD comic.
@@ -131,79 +180,18 @@ It is known that there's always a relevant XKCD comic regardless of the
 <a href="http://www.maruthven.com">Megan Ruthven</a> created this website 
 to exemplify this phenomenon. Relevant XKCD pulls information from the title and
 content each image to compare against your request. 
-<br/>
+</p>
+<p>
 Try it out by typing in a description of a comic you are looking for and wait 
 for it to appear before your very eyes! We suggest writing longer sentences 
 gives our algorithm more data to work with.
-<br/>These images are from the original
+</p>
+<p>
+These images are from the original
 <a href="http://www.xkcd.com">xkcd online comic</a>. We do not claim these 
-images as our own work, but we do claim they are awesome! 
+images as our own work, but we do claim they are awesome!
+</p>
 </div>
 </div>
 </body>
-<!-- Layout by Ian Clasbey, davean, and chromakode -->
-  
-<!--<br/><br/> 
-          	
-          	<form>
-          	Was this accurate?
-          	<button class='btn' type='button'>Yes</button>
-          	<br/>
-          	Or, choose the best option<br/>
-          	<input type='image' src='image1' id='imageButton' onClick='autofill();return false;'/>
-          	<input type='image' src='image2' id='imageButton' onClick='autofill();return false;'/>
-          	<input type='image' src='image3' id='imageButton' onClick='autofill();return false;'/>
-
-          	</form>"; -->
-  <!-- <body>
-  	<div class="container">
-		<div class="navbar">
-              <div class="navbar-inner">
-                  <div class="container">
-                  <ul class="nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href = "about.html">About</a></li>
-                    <li><a href="https://www.hackerleague.org/hackathons/hacktx">HackTX</a></li>
-                  </ul>
-                  </div>
-              </div>
-            </div>
-            
-            
-            <div class="main">
-            
-            <h1><b>There's Always a Relevant xkcd</b></h1><br/><br/>
-            <form name="inputBox" class="form-search">
-          	<input type="text" name="query" id="query" placeholder="Search Here"/><button type="submit" class="btn" onclick="sendQuery(); return false;">xkcd me!</button>
-          	</form>  
-          	
-          	
-          	<br /> Or, see your XKCD comic by logging into Facebook
-          	<br/><fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
-          	<br/><br/>
-          	
-          	<p id="results">
-          	</p>-->
-          	<!-- Put in a js function-->
-          	<!-- <img src="comic" alt="comic alt text"/> 
-          	<br/><br/> 
-          	
-          	<form>
-          	Was this accurate?
-          	<button class="btn" type="button">Yes</button>
-          	<br/>
-          	Or, choose the best option<br/>
-          	<input type="image" src="image1" id="imageButton" onClick="autofill();return false;"/>
-          	<input type="image" src="image2" id="imageButton" onClick="autofill();return false;"/>
-          	<input type="image" src="image3" id="imageButton" onClick="autofill();return false;"/>
-
-          	</form>   -->   
-          <!--</div>
-    
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="js/bootstrap.js"></script>
-    </div>
-  </body>-->
-  
-
 </html>

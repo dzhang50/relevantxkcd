@@ -157,6 +157,7 @@ ul.comicNav a:hover {
 	margin-bottom: 25px;
 	padding:10px 15px;
 	width:750px;
+	text-align:left;
 }
 #comicLinks {
     display: block;

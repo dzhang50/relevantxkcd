@@ -23,7 +23,8 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class RelevantXKCDServlet extends HttpServlet {
 	
     public final static long MAX_RUNTIME_MILLIS = 30000;
-    public final static double TRANS_BIAS = 25.0;
+	public final static double EBIAS = 1.0/20.0;
+	public final static double TBIAS = 20.0;
     
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -32,7 +33,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		
 		String action = req.getParameter("action");
 		String query = req.getParameter("query");
-		String dir = req.getParameter("dir");
+		String idx = req.getParameter("idx");
 		System.out.println("Action: "+action+", query: "+query);
 		
 		if(action.equals("rebuild")) {
@@ -52,9 +53,11 @@ public class RelevantXKCDServlet extends HttpServlet {
 			System.out.println("Query: "+query);
 			ArrayList<Integer> idxs = findRelevantIdx(query);
 			Global.buildURLs();
+			System.out.println("Idxs: "+idxs);
 			
-			for(Integer idx : idxs) {
-				String url = Global.urls.get(idx);
+			resp.getWriter().println(idxs.get(0)+" ");
+			for(int i = 1; i < idxs.size(); i++) {
+				String url = Global.urls.get(idxs.get(i));
 				resp.getWriter().println(url+" ");
 			}
 		}
@@ -65,13 +68,17 @@ public class RelevantXKCDServlet extends HttpServlet {
 				split[i] = split[i].toLowerCase();
 				split[i] = split[i].trim();
 			}
-			if(dir.equals("positive")) {
+			if(idx.equals("0")) {
+				System.out.println("Training towards positive");
 				Global.bayes.learn("positive", Arrays.asList(split));
 			}
-			else {
+			else if(idx.equals("1")) {
+				System.out.println("Training towards negative");
 				Global.bayes.learn("negative", Arrays.asList(split));
 			}
-			
+			else {
+				System.out.println("WARNING: incorrect idx = "+idx);
+			}
 		}
 	}
 	
@@ -88,30 +95,24 @@ public class RelevantXKCDServlet extends HttpServlet {
 		//Global.bayes.learn("positive", Arrays.asList(split));
 
 		Classification<String, String> classify = Global.bayes.classify(Arrays.asList(split));
-		double eBias = 1.0/20.0, tBias = 20.0;
+		int chosen = 0;
 		if(classify == null) {
 			System.out.println("Naive Bayes is not initialized");
-			eBias = 1.0/10.0;
-			tBias = 10.0;
 		}
 		// Positive tends towards transcript
 		else if(classify.getCategory().equals("positive")) {
 			double prob = classify.getProbability();
 			System.out.println("Naive Bayes is positive with prob "+prob);
 			if(prob > 0.7) {
-				double weight = prob*40.0;
-				eBias = 1.0/weight;
-				tBias = weight;
+				// Do nothing
 			}
 		}
 		// Negative tends towards explanation
 		else {
 			double prob = classify.getProbability();
 			System.out.println("Naive Bayes is negative with prob "+prob);
-			if(prob > 0.7) {
-				double weight = prob*40.0;
-				eBias = weight;
-				tBias = 1.0/weight;
+			if(prob > 0.6) {
+				chosen = 1;
 			}
 		}
 		
@@ -126,18 +127,18 @@ public class RelevantXKCDServlet extends HttpServlet {
 		boolean earlyStop = false;
 		//for(int i = 1; i < 1290; i++) {
 		for(int i = 1289; i > 0; i--) {
-			HashMap<Integer, Integer> explain = Global.getBlockDict("explain", i);
+			HashMap<Integer, Integer> explain = Global.getDict("explain", i);
 			if(explain == null) {
 				System.out.println("Warning, NULL: explain_"+i);
 				continue;
 			}
-			HashMap<Integer, Integer> transcript = Global.getBlockDict("transcript", i);
+			HashMap<Integer, Integer> transcript = Global.getDict("transcript", i);
 			if(transcript == null) {
 				System.out.println("Warning, NULL: transcript_"+i);
 				continue;
 			}
-			Global.buildEDict();
-			Global.buildTDict();
+			Global.buildEGlobalDict();
+			Global.buildTGlobalDict();
 			
 			Double eWeight = 0.0;
 			Double tWeight = 0.0;
@@ -187,7 +188,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		endMisses = Global.cacheMisses;
 		ArrayList<Tuple<Integer, Double>> totalWeights = new ArrayList<Tuple<Integer, Double>>();
 		for(int i = 0; i < explainWeights.size(); i++) {
-			double w = eBias*explainWeights.get(i).second + tBias*transcriptWeights.get(i).second;
+			double w = EBIAS*explainWeights.get(i).second + TBIAS*transcriptWeights.get(i).second;
 			totalWeights.add(new Tuple<Integer, Double>(explainWeights.get(i).first, new Double(w)));
 			//System.out.println(i+": eWeight: "+explainWeights.get(i)+", tWeight: "+transcriptWeights.get(i)+", total: "+w);
 		}
@@ -230,11 +231,28 @@ public class RelevantXKCDServlet extends HttpServlet {
 		System.out.println("Total cache misses: "+(endMisses-startMisses));
 		
 		ArrayList<Integer> comics = new ArrayList<Integer>();
-		comics.add(totalWeights.get(0).first);
-		comics.add(explainWeights.get(0).first);
-		comics.add(transcriptWeights.get(0).first);
-		comics.add(totalWeights.get(1).first);
-		comics.add(totalWeights.get(2).first);
+		comics.add(chosen); // First entry represents the one that is chosen (i.e. not following standard order)
+		
+		int first = totalWeights.get(0).first;
+		comics.add(first);
+		
+		if(first != explainWeights.get(0).first) {
+			System.out.println("Alternative: explain");
+			comics.add(explainWeights.get(0).first);
+		}
+		// Maybe I shouldn't have this since the weight is already so biased towards transcripts?
+		else if(first != transcriptWeights.get(0).first) {
+			System.out.println("Alternative: transcript");
+			comics.add(transcriptWeights.get(0).first);
+		}
+		else if(first != totalWeights.get(1).first) {
+			System.out.println("Alternative: second");
+			comics.add(totalWeights.get(1).first);
+		} else {
+			System.out.println("Alternative: third");
+			comics.add(totalWeights.get(2).first);
+		}
+		
 		return comics;
 	}
 	
