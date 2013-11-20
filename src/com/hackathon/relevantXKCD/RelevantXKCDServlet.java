@@ -162,11 +162,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 					// If contained in word, increment tWeight
 					if(transcript.containsKey(entry.first)) {
 						assert(Global.tGlobalDict.containsKey(entry.first));
-						Double transcriptGet = ((double)transcript.get(entry.first));
-						//System.out.println("transcript file: "+i+", word "+split[j]+", key "+entry.first);
-						Double globalTranscriptGet = ((double)Global.tGlobalDict.get(entry.first));
-						
-						tWeight += transcriptGet/globalTranscriptGet;
+						tWeight += ((double)transcript.get(entry.first))/((double)Global.tGlobalDict.get(entry.first));
 						//System.out.println("Transcript word '"+split[j]+"' matched! tWeight += "+transcript.get(entry.first)+"/"+Global.tGlobalDict.get(entry.first)+" = "+tWeight);
 					}
 				}

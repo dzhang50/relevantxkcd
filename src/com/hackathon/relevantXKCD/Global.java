@@ -85,7 +85,6 @@ public class Global {
     }
     
     // <dictionary idx, weight>
-    @SuppressWarnings("unchecked")
 	public static HashMap<Integer, Integer> buildDict(String name) throws IOException {
 
 		HashMap<Integer, Integer> dict = new HashMap<Integer, Integer>();
