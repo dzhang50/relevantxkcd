@@ -3,6 +3,7 @@ import urllib2, cookielib
 import time
 import re
 import random
+import os
 
 baseurl = "http://www.explainxkcd.com/wiki/index.php";
 hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -14,7 +15,11 @@ hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML,
 
 urls = [];
 
-for i in range(1290,1293):
+for i in range(1,1293):
+    if(os.path.isfile("raw/raw_"+str(i))):
+        print "File "+str(i)+" exists, skipping!";
+        continue;
+
     url = baseurl+"?title="+str(i);
 
     print "Downloading " + url + "...\n";
@@ -28,6 +33,6 @@ for i in range(1290,1293):
     
     out = open("raw/raw_"+str(i), "w");
     out.write(content);
-    wait = random.randrange(1,10);
+    wait = random.randrange(1,5);
     print "Sleeping for " + str(wait) + " seconds...\n";
     time.sleep(wait);
