@@ -34,12 +34,14 @@ for root, dirs, files in os.walk("raw"):
     #files.sort();
     
     for fi in files:
+        skip = 0;
         for filtered in filters:
             if(fi == "raw_"+str(filtered)):
                 print fi+" matches "+str(filtered)+", skipping...";
                 #sys.exit();
-                continue;
-
+                skip = 1;
+        if(skip == 1):
+            continue;
         filename = os.path.join(root, fi);
         print "Processing " + filename;
         f = open(filename, "r");
