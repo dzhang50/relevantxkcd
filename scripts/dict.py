@@ -1,13 +1,28 @@
 #!/usr/bin/python
 import glob, os, sys, re
 
+BLOCK_SIZE = 500;
 
 raw = re.compile("raw\_");
 
 err = open("dict_log", "w");
 globalDict = {};
+
+def compare(x, y):
+    name1 = raw.sub("", x);
+    name2 = raw.sub("", y);
+    i1 = int(name1);
+    i2 = int(name2);
+    #print "Comparing "+str(i1)+" with "+str(i2);
+    if(i1 > i2):
+        return 1;
+    elif(i1 < i2):
+        return -1;
+    else:
+        return 0;
+
 for root, dirs, files in os.walk("strip"):
-    files.sort();
+    files = sorted(files, cmp=compare);
     
     for fi in files:
         filename = os.path.join(root, fi);
@@ -44,14 +59,22 @@ out.close();
 #--------------------------------------
 
 dicts = [];
-dict1 = {};
-dict2 = {};
-dicts.append(dict1);
-dicts.append(dict2);
+dicts.append({});
+dicts.append({});
+
+outs = [];
+outs.append([]);
+outs.append([]);
+
+ids = [];
+ids.append([]);
+ids.append([]);
 
 for root, dirs, files in os.walk("strip"):
-    files.sort();
-    
+    #files.sort();
+    files = sorted(files, cmp=compare);
+    #print files;
+
     for fi in files:
         filename = os.path.join(root, fi);
         print "Processing " + filename;
@@ -91,10 +114,12 @@ for root, dirs, files in os.walk("strip"):
             name = raw.sub("", fi);
             f = "";
             if i == 0:
-                f = "dicts/explain_"+name;
+                f = "explain_"+name;
             elif i == 1:
-                f = "dicts/transcript_"+name;
-            out = open(f, "w");
+                f = "transcript_"+name;
+            out = open("dicts/"+f, "w");
+            tmp = [];
+            tmp.append("-"+name+"\n");
             sortedDict = [(k, myDicts[i][k]) for k in sorted(myDicts[i], key=myDicts[i].get, reverse=True)];
             for entry in sortedDict:
                 # Find dimension corresponding to word
@@ -104,9 +129,43 @@ for root, dirs, files in os.walk("strip"):
                     print entry[0];
                     sys.exit(1);
                 #print entry[0]+" found at "+str(idx);
-                out.write(str(idx)+" "+entry[0]+" "+str(entry[1])+"\n");
+                outStr = str(idx)+" "+entry[0]+" "+str(entry[1])+"\n";
+                out.write(outStr);
+                tmp.append(outStr);
+            outs[i].append(tmp);
+            ids[i].append(name);
             out.close();
 
+# Write block files
+x = 0;
+myType = "";
+for out in outs:
+    if(x == 0):
+        myType = "explain";
+    elif(x == 1):
+        myType = "transcript";
+    else:
+        print "ERROR MORE THAN 2";
+        sys.exit(1);
+
+    cnt = 0;
+    blockID = 0;
+    numBlocks = 0;
+    output = open("dicts_block/"+myType+"_"+str(numBlocks*BLOCK_SIZE), "w");
+    numBlocks = numBlocks + 1;
+    for fi in out:
+        print myType+"_"+ids[x][cnt];
+        if(int(ids[x][cnt]) >= numBlocks*BLOCK_SIZE):
+            print "  "+ids[x][cnt]+" bigger than "+str(numBlocks*BLOCK_SIZE)+", making new file\n";
+            output.close();
+            output = open("dicts_block/"+myType+"_"+str(numBlocks*BLOCK_SIZE), "w");
+            numBlocks = numBlocks + 1;
+        for line in fi:
+            output.write(line);
+            #print line;
+        cnt = cnt + 1;
+    output.close();
+    x = x + 1;
 
 
 # Create explanation dictionary

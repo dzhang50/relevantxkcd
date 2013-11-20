@@ -14,7 +14,7 @@ hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML,
 
 urls = [];
 
-for i in range(1,1290):
+for i in range(1290,1293):
     url = baseurl+"?title="+str(i);
 
     print "Downloading " + url + "...\n";

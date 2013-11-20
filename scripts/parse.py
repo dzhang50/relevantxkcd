@@ -5,6 +5,7 @@ numTest = 10;
 cnt = 0;
 
 # Regular expressions
+title = re.compile("\<title\>\d+\: (.+) \- explain xkcd");
 trivia = re.compile("\Explanation.*<\/h2\>(.+)\<h2\>.*Transcript.*\<\/h2\>(.+)\<h2\>.*Trivia");
 notrivia = re.compile("\Explanation.*<\/h2\>(.+)\<h2\>.*Transcript.*\<\/h2\>(.+?)\<span.+Discussion");
 tag = re.compile("\<[^>]+\>");
@@ -24,6 +25,14 @@ for root, dirs, files in os.walk("raw"):
             raw = raw + line.rstrip().lstrip();
         #print raw;
         #print "-----";
+        m = title.search(raw);
+        myTitle = "";
+        if m:
+            print "Title: "+m.group(1)+"\n";
+            myTitle = m.group(1);
+        else:
+            print "ERROR: TITLE NOT FOUND\n";
+            sys.exit(1);
         m = trivia.search(raw);
         if not m:
             print "No trivia!";
@@ -40,7 +49,7 @@ for root, dirs, files in os.walk("raw"):
         #print "-- Transcript --";
         #print m.group(2);
         resultE = tag.sub(" ", m.group(1));
-        resultT = tag.sub(" ", m.group(2));
+        resultT = myTitle+" "+tag.sub(" ", m.group(2));
         
         resultE = ws.sub(" ", resultE);
         resultT = ws.sub(" ", resultT);
