@@ -58,7 +58,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 			resp.getWriter().println(idxs.get(0)+" ");
 			for(int i = 1; i < idxs.size(); i++) {
 				String url = Global.urls.get(idxs.get(i));
-				resp.getWriter().println(url+" ");
+				resp.getWriter().println(+idxs.get(i)+" "+url+" ");
 			}
 		}
 		else if(action.equals("train")) {
