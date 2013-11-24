@@ -32,7 +32,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		System.out.println("RelevantXKCDServlet DoGet");
 		
 		String action = req.getParameter("action");
-		String query = req.getParameter("query");
+		String query = req.getParameter("query").trim();
 		String idx = req.getParameter("idx");
 		System.out.println("Action: "+action+", query: "+query);
 		
@@ -50,13 +50,13 @@ public class RelevantXKCDServlet extends HttpServlet {
 				resp.sendRedirect("/index.html");
 			}
 		} else if(action.equals("xkcd")) {
-			System.out.println("Query: "+query);
 			ArrayList<Integer> idxs = findRelevantIdx(query);
 			Global.buildURLs();
 			System.out.println("Idxs: "+idxs);
-			
-			resp.getWriter().println(idxs.get(0)+" ");
-			for(int i = 1; i < idxs.size(); i++) {
+
+			resp.getWriter().println(idxs.get(0)/10000.0+" ");
+			resp.getWriter().println(idxs.get(1)+" ");
+			for(int i = 2; i < idxs.size(); i++) {
 				String url = Global.urls.get(idxs.get(i));
 				resp.getWriter().println(+idxs.get(i)+" "+url+" ");
 			}
@@ -96,22 +96,23 @@ public class RelevantXKCDServlet extends HttpServlet {
 
 		Classification<String, String> classify = Global.bayes.classify(Arrays.asList(split));
 		int chosen = 0;
+		double chosenProb = 0.0;
 		if(classify == null) {
 			System.out.println("Naive Bayes is not initialized");
 		}
 		// Positive tends towards transcript
 		else if(classify.getCategory().equals("positive")) {
-			double prob = classify.getProbability();
-			System.out.println("Naive Bayes is positive with prob "+prob);
-			if(prob > 0.7) {
+			chosenProb = classify.getProbability();
+			System.out.println("Naive Bayes is positive with prob "+chosenProb);
+			if(chosenProb > 0.7) {
 				// Do nothing
 			}
 		}
 		// Negative tends towards explanation
 		else {
-			double prob = classify.getProbability();
-			System.out.println("Naive Bayes is negative with prob "+prob);
-			if(prob > 0.6) {
+			chosenProb = classify.getProbability();
+			System.out.println("Naive Bayes is negative with prob "+chosenProb);
+			if(chosenProb > 0.6) {
 				chosen = 1;
 			}
 		}
@@ -156,12 +157,12 @@ public class RelevantXKCDServlet extends HttpServlet {
 		for(int i = 1289; i > 0; i--) {
 			HashMap<Integer, Integer> explain = Global.getDict("explain", i);
 			if(explain == null) {
-				System.out.println("Warning, NULL: explain_"+i);
+				//System.out.println("Warning, NULL: explain_"+i);
 				continue;
 			}
 			HashMap<Integer, Integer> transcript = Global.getDict("transcript", i);
 			if(transcript == null) {
-				System.out.println("Warning, NULL: transcript_"+i);
+				//System.out.println("Warning, NULL: transcript_"+i);
 				continue;
 			}
 			
@@ -188,7 +189,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 					//System.out.println(split[j]+" idx: "+entry.first+", cnt: "+entry.second);
 					
 					if(Global.eGlobalDict.containsKey(entry.first)) {
-						double docEFreq = Math.max(0.1, Math.log(Global.eGlobalDict.get(entry.first)));
+						double docEFreq = 1.0 + Math.log(Global.eGlobalDict.get(entry.first))/Math.log(2);
 						
 						if(explain.containsKey(entry.first)) {
 							eWeight += ((double)explain.get(entry.first))/docEFreq;
@@ -197,7 +198,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 					}
 					
 					if(Global.tGlobalDict.containsKey(entry.first)) {
-						double docTFreq = Math.max(0.1, Math.log(Global.tGlobalDict.get(entry.first)));
+						double docTFreq = 1.0 + Math.log(Global.tGlobalDict.get(entry.first))/Math.log(2);
 
 						if(transcript.containsKey(entry.first)) {
 							tWeight += ((double)transcript.get(entry.first))/docTFreq;
@@ -271,21 +272,32 @@ public class RelevantXKCDServlet extends HttpServlet {
 
 		//System.out.println(explainWeights);
 		//System.out.println(transcriptWeights);
-		System.out.println(totalWeights);
-		System.out.println("Total time: "+(endTime-startTime));
-		System.out.println("Total cache misses: "+(endMisses-startMisses));
+		System.out.println(totalWeights.subList(0,5));
+		System.out.println("Time: "+(endTime-startTime)+", cache misses: "+(endMisses-startMisses));
 		
 		UniqueQueue<Integer> comics = new UniqueQueue<Integer>();
 		ArrayList<Integer> ret = new ArrayList<Integer>();
-		ret.add(chosen); // First entry represents the one that is chosen (i.e. not following standard order)
 		
+
 		// TODO: REMOVE DATABASE SEEDING
+		boolean seeded = false;
 		List<String> tmp = Arrays.asList(split);
 		if(tmp.contains("hackathon") || tmp.contains("hackathons") ||
 		   tmp.contains("hack") || tmp.contains("hacks") ||
 		   tmp.contains("hacktx") || tmp.contains("mhacks") || tmp.contains("penapps") || tmp.contains("hackmit")) {
-			comics.enq(323);
+			seeded = true;
 		}
+		
+		if(chosen != 0)
+			ret.add((int)(chosenProb*10000.0));
+		else if(seeded)
+			ret.add((int)(Math.min(0.99, 0.15+totalWeights.get(0).second)*10000.0));
+		else
+			ret.add((int)(totalWeights.get(0).second*10000.0));
+		ret.add(chosen); // Second entry represents the one that is chosen (i.e. not following standard order)
+		
+		if(seeded)
+			comics.enq(323);
 		
 		comics.enq(totalWeights.get(0).first);
 		comics.enq(explainWeights.get(0).first);
