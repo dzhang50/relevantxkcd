@@ -188,25 +188,20 @@ public class RelevantXKCDServlet extends HttpServlet {
 					//System.out.println(split[j]+" idx: "+entry.first+", cnt: "+entry.second);
 					
 					if(Global.eGlobalDict.containsKey(entry.first)) {
-						int docEFreq = Global.eGlobalDict.get(entry.first);
-					
-						if(docEFreq != 1)
-							docEFreq = (int)Math.log(docEFreq);
+						double docEFreq = Math.max(0.1, Math.log(Global.eGlobalDict.get(entry.first)));
 						
 						if(explain.containsKey(entry.first)) {
-							eWeight += ((double)explain.get(entry.first))/((double)docEFreq);
-							//System.out.println("Explain word '"+split[j]+"' matched! eWeight += "+explain.get(entry.first)+"/"+Global.eGlobalDict.get(entry.first)+" = "+eWeight);
+							eWeight += ((double)explain.get(entry.first))/docEFreq;
+							//System.out.println("Explain word '"+split[j]+"' matched! eWeight += "+explain.get(entry.first)+"/"+docEFreq+" = "+eWeight);
 						}
 					}
 					
 					if(Global.tGlobalDict.containsKey(entry.first)) {
-						int docTFreq = Global.tGlobalDict.get(entry.first);
-						if(docTFreq != 1)
-							docTFreq = (int)Math.log(docTFreq);
+						double docTFreq = Math.max(0.1, Math.log(Global.tGlobalDict.get(entry.first)));
 
 						if(transcript.containsKey(entry.first)) {
-							tWeight += ((double)transcript.get(entry.first))/((double)docTFreq);
-							//System.out.println("Transcript word '"+split[j]+"' matched! tWeight += "+transcript.get(entry.first)+"/"+Global.tGlobalDict.get(entry.first)+" = "+tWeight);
+							tWeight += ((double)transcript.get(entry.first))/docTFreq;
+							//System.out.println("Transcript word '"+split[j]+"' matched! tWeight += "+transcript.get(entry.first)+"/"+docTFreq+" = "+tWeight);
 						}
 					}
 				}
