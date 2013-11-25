@@ -90,7 +90,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 			split[i] = split[i].toLowerCase();
 			split[i] = split[i].trim();
 		}
-		System.out.println(Arrays.toString(split));
+		//System.out.println(Arrays.toString(split));
 
 		//Global.bayes.learn("positive", Arrays.asList(split));
 
@@ -98,7 +98,7 @@ public class RelevantXKCDServlet extends HttpServlet {
 		int chosen = 0;
 		double chosenProb = 0.0;
 		if(classify == null) {
-			System.out.println("Naive Bayes is not initialized");
+			//System.out.println("Naive Bayes is not initialized");
 		}
 		// Positive tends towards transcript
 		else if(classify.getCategory().equals("positive")) {
@@ -272,8 +272,8 @@ public class RelevantXKCDServlet extends HttpServlet {
 
 		//System.out.println(explainWeights);
 		//System.out.println(transcriptWeights);
-		System.out.println(totalWeights.subList(0,5));
-		System.out.println("Time: "+(endTime-startTime)+", cache misses: "+(endMisses-startMisses));
+		System.out.println(totalWeights.subList(0,3));
+		//System.out.println("Time: "+(endTime-startTime)+", cache misses: "+(endMisses-startMisses));
 		
 		UniqueQueue<Integer> comics = new UniqueQueue<Integer>();
 		ArrayList<Integer> ret = new ArrayList<Integer>();
@@ -283,7 +283,6 @@ public class RelevantXKCDServlet extends HttpServlet {
 		boolean seeded = false;
 		List<String> tmp = Arrays.asList(split);
 		if(tmp.contains("hackathon") || tmp.contains("hackathons") ||
-		   tmp.contains("hack") || tmp.contains("hacks") ||
 		   tmp.contains("hacktx") || tmp.contains("mhacks") || tmp.contains("penapps") || tmp.contains("hackmit")) {
 			seeded = true;
 		}
